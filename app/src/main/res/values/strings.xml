@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Movies App</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">Details</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="NOInternetConnection">No Internet connection, pleae connect to internet</string>
+</resources>
