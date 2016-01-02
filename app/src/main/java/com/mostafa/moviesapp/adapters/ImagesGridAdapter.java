@@ -20,6 +20,11 @@ import java.util.ArrayList;
 public class ImagesGridAdapter extends BaseAdapter {
 
     private Context context;
+
+    public void setMovies(Movie[] movies) {
+        this.movies = movies;
+    }
+
     private Movie[] movies;
 
     public ImagesGridAdapter(Context context, Movie[] movies) {
@@ -45,9 +50,9 @@ public class ImagesGridAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(90, 90));
+            imageView.setLayoutParams(new GridView.LayoutParams(130, 195));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            imageView.setPadding(4, 4, 4, 4);
+            imageView.setPadding(0,1, 0, 0);
         } else {
             imageView = (ImageView) convertView;
         }

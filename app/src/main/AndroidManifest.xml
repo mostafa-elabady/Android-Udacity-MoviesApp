@@ -30,6 +30,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mostafa.moviesapp.MainActivity" />
         </activity>
+
+        <provider
+            android:authorities="com.mostafa.moviesapp.FavoritesProvider"
+            android:name=".data.FavoritesProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -20,11 +20,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.mostafa.moviesapp.adapters.ImagesGridAdapter;
 import com.mostafa.moviesapp.helpers.Utility;
 import com.mostafa.moviesapp.models.Movie;
+import com.mostafa.moviesapp.tasks.FetchMoviesTask;
+import com.mostafa.moviesapp.tasks.ParseMoviesTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +50,7 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
     private GridView moviesGridView;
+    private Spinner sorttypeSpinner;
     private ImagesGridAdapter moviesAdapter;
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private FetchMoviesTask fetchFromServerTask;
@@ -73,7 +78,7 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             if (isConnected(getActivity())) {
-                parseMoviesTask = new ParseMoviesTask();
+                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter);
                 fetchFromServerTask = new FetchMoviesTask(parseMoviesTask);
                 String FORECAST_URL = String.format(Utility.API_URL, BuildConfig.OPEN_WEATHER_MAP_API_KEY, Utility.PAGE_DEFAULT_VALUE);
                 fetchFromServerTask.execute(FORECAST_URL);
@@ -90,7 +95,20 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        sorttypeSpinner  = (Spinner) rootView.findViewById(R.id.spurcetypespinner);
+//        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(),
+//                R.array.sorttype_array, R.layout.item_spinner);
+//        sorttypeSpinner.setAdapter(mSpinnerAdapter);
+
+//        CustomSpinnerInteractionListener listener = new CustomSpinnerInteractionListener();
+//        sorttypeSpinner.setOnTouchListener(listener);
+//        sorttypeSpinner.setOnItemSelectedListener(listener);
+
+
         moviesGridView = (GridView) rootView.findViewById(R.id.maingridView);
+        moviesAdapter = new ImagesGridAdapter(getContext(), new Movie[]{});
+        moviesGridView.setAdapter(moviesAdapter);
         moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -103,7 +121,7 @@ public class MainActivityFragment extends Fragment {
             }
         });
         if (isConnected(getActivity())) {
-            parseMoviesTask = new ParseMoviesTask();
+            parseMoviesTask = new ParseMoviesTask(getActivity(),  moviesAdapter);
             fetchFromServerTask = new FetchMoviesTask(parseMoviesTask);
             String FORECAST_URL = String.format(Utility.API_URL, BuildConfig.OPEN_WEATHER_MAP_API_KEY ,  Utility.PAGE_DEFAULT_VALUE);
             fetchFromServerTask.execute(FORECAST_URL);
@@ -121,144 +139,7 @@ public class MainActivityFragment extends Fragment {
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, String> {
-
-        private AsyncTask parseAsyncTask;
 
 
-        public FetchMoviesTask(AsyncTask parseAsyncTask) {
-            this.parseAsyncTask = parseAsyncTask;
-        }
 
-        @Override
-        protected String doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String moviesJsonString = null;
-
-            try {
-                Uri builtUri = Uri.parse(params[0]);
-
-                URL url = new URL(builtUri.toString());
-
-                // Create the request to MoviesDB, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                moviesJsonString = buffer.toString();
-                return moviesJsonString;
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String jsonString) {
-            super.onPostExecute(jsonString);
-            if (parseAsyncTask != null && jsonString != null) {
-                try {
-                    Log.d(LOG_TAG, "json :" + jsonString);
-                    parseAsyncTask.execute(jsonString);
-                } catch (Exception ex) {
-                    Log.e(LOG_TAG, "Error ", ex);
-                }
-
-            }
-        }
-    }
-
-    public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
-
-        public ParseMoviesTask() {
-        }
-
-        @Override
-        protected Movie[] doInBackground(Object... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            final String MOVIES_LIST_KEY = "results";
-            final String ID_KEY = "id";
-            final String TITLE_KEY = "title";
-            final String OVERVIEW_KEY = "overview";
-            final String POSTERPATH_KEY = "poster_path";
-
-            try {
-                String jsonStrring = (String) params[0];
-
-                JSONObject rootJson = new JSONObject(jsonStrring);
-
-                JSONArray moviesArray = rootJson.getJSONArray(MOVIES_LIST_KEY);
-                Movie[] movies = new Movie[moviesArray.length()];
-                for (int i = 0; i < moviesArray.length(); i++) {
-
-                    JSONObject movieJSON = moviesArray.getJSONObject(i);
-
-                    movies[i] = new Movie();
-                    movies[i].setId(movieJSON.getInt(ID_KEY));
-                    movies[i].setOverview(movieJSON.getString(OVERVIEW_KEY));
-                    movies[i].setPosterRelativePath(movieJSON.getString(POSTERPATH_KEY));
-                    movies[i].setTitle(movieJSON.getString(TITLE_KEY));
-                }
-                return movies;
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Error ", e);
-                return null;
-            } finally {
-
-            }
-        }
-
-
-        @Override
-        protected void onPostExecute(Movie[] movies) {
-            super.onPostExecute(movies);
-            if (movies != null) {
-                moviesAdapter = new ImagesGridAdapter(getActivity(), movies);
-                if (moviesGridView != null) {
-                    moviesGridView.setAdapter(moviesAdapter);
-                }
-            }
-        }
-    }
 }
