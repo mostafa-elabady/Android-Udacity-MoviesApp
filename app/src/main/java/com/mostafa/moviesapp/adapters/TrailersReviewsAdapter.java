@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.mostafa.moviesapp.models.TrailerReview;
+
 /**
  * Created by Mostafa El-Abady on 1/23/2016.
  */
@@ -33,5 +35,8 @@ public class TrailersReviewsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return null;
+    }
+
+    public void addTrailersReviews(TrailerReview[] trailerreviews) {
     }
 }

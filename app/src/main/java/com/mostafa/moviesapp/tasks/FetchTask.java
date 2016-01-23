@@ -14,14 +14,14 @@ import java.net.URL;
 /**
  * Created by Mostafa El-Abady on 1/2/2016.
  */
-public class FetchMoviesTask extends AsyncTask<String, Void, String> {
+public class FetchTask extends AsyncTask<String, Void, String> {
 
-    private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+    private final String LOG_TAG = FetchTask.class.getSimpleName();
 
     private AsyncTask parseAsyncTask;
 
 
-    public FetchMoviesTask(AsyncTask parseAsyncTask) {
+    public FetchTask(AsyncTask parseAsyncTask) {
         this.parseAsyncTask = parseAsyncTask;
     }
 

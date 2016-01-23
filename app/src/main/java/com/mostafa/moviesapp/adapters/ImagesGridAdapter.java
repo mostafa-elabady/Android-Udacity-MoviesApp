@@ -1,8 +1,11 @@
 package com.mostafa.moviesapp.adapters;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -50,7 +53,11 @@ public class ImagesGridAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
-           // imageView.setLayoutParams(new GridView.LayoutParams(130, 195));
+//            DisplayMetrics displayMetrics = new DisplayMetrics();
+//            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+//
+//            imageView.setLayoutParams(new GridView.LayoutParams( Math.round(130 * displayMetrics.density),  Math.round (195* displayMetrics.density)));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             imageView.setPadding(0,1, 0, 0);
         } else {

@@ -17,7 +17,7 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
 
     private ImagesGridAdapter moviesAdapter;
     private  Context context;
-    private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+    private final String LOG_TAG = FetchTask.class.getSimpleName();
 
     public ParseMoviesTask(Context context, ImagesGridAdapter moviesAdapter) {
         this.context = context;
@@ -77,11 +77,8 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
         super.onPostExecute(movies);
         if (movies != null) {
             moviesAdapter.setMovies(movies);
-           // moviesAdapter = new ImagesGridAdapter(context, movies);
             moviesAdapter.notifyDataSetChanged();
-//            if (moviesGridView != null) {
-//                moviesGridView.setAdapter(moviesAdapter);
-//            }
+
         }
     }
 }

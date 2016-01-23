@@ -1,12 +1,10 @@
 package com.mostafa.moviesapp;
 
-import android.sax.RootElement;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +26,7 @@ public class DetailActivityFragment extends Fragment {
     private ImageView movieImageView;
     private TextView overviewTextView;
     private  TextView releaseDateTextView;
+    private  TextView averageVoteTextView;
 
     public DetailActivityFragment() {
     }
@@ -47,6 +46,7 @@ public class DetailActivityFragment extends Fragment {
         overviewTextView = (TextView) header.findViewById(R.id.movie_detail_overview);
         movieImageView = (ImageView) header.findViewById(R.id.movie_detail_image);
         releaseDateTextView = (TextView)header.findViewById(R.id.movie_detail_releasedate);
+        averageVoteTextView = (TextView)header.findViewById(R.id.movie_detail_avergatevote);
 
         // Fetching data from a parcelable object passed from MainActivity
         Movie movie = getActivity().getIntent().getParcelableExtra("movie");
@@ -60,6 +60,8 @@ public class DetailActivityFragment extends Fragment {
                 releaseDateTextView.setText(fullReleaseDate.substring(0,4));
                 else
             releaseDateTextView.setText(fullReleaseDate);
+
+            averageVoteTextView.setText(String.format("%s/10", movie.getVoteAverage()) );
         }
 
         return rootView;

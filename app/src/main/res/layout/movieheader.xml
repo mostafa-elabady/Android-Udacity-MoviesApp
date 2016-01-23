@@ -34,13 +34,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="12dp"
+                android:orientation="vertical"
                 android:layout_marginTop="4dp">
 
                 <TextView
                     android:id="@+id/movie_detail_releasedate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="18sp"
                     />
+                    <TextView
+                        android:id="@+id/movie_detail_avergatevote"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        />
             </LinearLayout>
         </LinearLayout>
 
@@ -51,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-
+            android:layout_marginLeft="12dp"
             />
 
     </LinearLayout>

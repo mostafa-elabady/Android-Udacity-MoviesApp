@@ -4,12 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,32 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.mostafa.moviesapp.adapters.ImagesGridAdapter;
 import com.mostafa.moviesapp.helpers.Utility;
 import com.mostafa.moviesapp.models.Movie;
-import com.mostafa.moviesapp.tasks.FetchMoviesTask;
+import com.mostafa.moviesapp.tasks.FetchTask;
 import com.mostafa.moviesapp.tasks.ParseMoviesTask;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -53,7 +32,7 @@ public class MainActivityFragment extends Fragment {
     private Spinner sorttypeSpinner;
     private ImagesGridAdapter moviesAdapter;
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
-    private FetchMoviesTask fetchFromServerTask;
+    private FetchTask fetchFromServerTask;
     private ParseMoviesTask parseMoviesTask;
 
     public MainActivityFragment() {
@@ -79,8 +58,8 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.action_refresh) {
             if (isConnected(getActivity())) {
                 parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter);
-                fetchFromServerTask = new FetchMoviesTask(parseMoviesTask);
-                String FORECAST_URL = String.format(Utility.API_URL, BuildConfig.OPEN_WEATHER_MAP_API_KEY, Utility.PAGE_DEFAULT_VALUE);
+                fetchFromServerTask = new FetchTask(parseMoviesTask);
+                String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
                 fetchFromServerTask.execute(FORECAST_URL);
             } else {
                 Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
@@ -122,8 +101,8 @@ public class MainActivityFragment extends Fragment {
         });
         if (isConnected(getActivity())) {
             parseMoviesTask = new ParseMoviesTask(getActivity(),  moviesAdapter);
-            fetchFromServerTask = new FetchMoviesTask(parseMoviesTask);
-            String FORECAST_URL = String.format(Utility.API_URL, BuildConfig.OPEN_WEATHER_MAP_API_KEY ,  Utility.PAGE_DEFAULT_VALUE);
+            fetchFromServerTask = new FetchTask(parseMoviesTask);
+            String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY ,  Utility.PAGE_DEFAULT_VALUE);
             fetchFromServerTask.execute(FORECAST_URL);
         } else {
             Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
