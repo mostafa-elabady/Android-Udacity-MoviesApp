@@ -37,6 +37,10 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
         final String OVERVIEW_KEY = "overview";
         final String POSTERPATH_KEY = "poster_path";
 
+        final String RELEASE_DATE_KEY = "release_date";
+        final String VOTE_Count_KEY = "vote_count";
+        final String VOTE_AVERAGE_KEY = "vote_average";
+
         try {
             String jsonStrring = (String) params[0];
 
@@ -53,6 +57,10 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
                 movies[i].setOverview(movieJSON.getString(OVERVIEW_KEY));
                 movies[i].setPosterRelativePath(movieJSON.getString(POSTERPATH_KEY));
                 movies[i].setTitle(movieJSON.getString(TITLE_KEY));
+
+                movies[i].setReleaseDate(movieJSON.getString(RELEASE_DATE_KEY));
+                movies[i].setVoteCount(movieJSON.getInt(VOTE_Count_KEY));
+                movies[i].setVoteAverage(movieJSON.getDouble(VOTE_AVERAGE_KEY));
             }
             return movies;
         } catch (Exception e) {

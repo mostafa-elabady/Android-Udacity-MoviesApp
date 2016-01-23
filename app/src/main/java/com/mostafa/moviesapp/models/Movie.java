@@ -13,41 +13,67 @@ public class Movie implements Parcelable {
     }
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 
     public String getOverview() {
-        return Overview;
+        return overview;
     }
 
     public void setOverview(String overview) {
-        Overview = overview;
+        this.overview = overview;
     }
 
     public String getPosterRelativePath() {
-        return PosterRelativePath;
+        return posterRelativePath;
     }
 
     public void setPosterRelativePath(String posterRelativePath) {
-        PosterRelativePath = posterRelativePath;
+        this.posterRelativePath = posterRelativePath;
+    }
+    public String getReleaseDate() {
+        return releaseDate;
     }
 
-    private int Id;
-    private String Title;
-    private String Overview;
-    private String PosterRelativePath;
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+    }
+
+    public double getVoteAverage() {
+        return voteAverage;
+    }
+
+    public void setVoteAverage(double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    private int id;
+    private String title;
+    private String overview;
+    private String posterRelativePath;
+    private  String releaseDate;
+    private int voteCount;
+    private double voteAverage;
 
     @Override
     public int describeContents() {
@@ -56,10 +82,13 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(Title);
-        dest.writeString(Overview);
-        dest.writeString(PosterRelativePath);
-        dest.writeInt(Id);
+        dest.writeString(title);
+        dest.writeString(overview);
+        dest.writeString(posterRelativePath);
+        dest.writeInt(id);
+        dest.writeString(releaseDate);
+        dest.writeInt(voteCount);
+        dest.writeDouble(voteAverage);
 
     }
 
@@ -69,10 +98,13 @@ public class Movie implements Parcelable {
      * the object CREATOR
      **/
     private Movie(Parcel in) {
-        this.Title = in.readString();
-        this.Overview = in.readString();
-        this.PosterRelativePath = in.readString();
-        this.Id = in.readInt();
+        this.title = in.readString();
+        this.overview = in.readString();
+        this.posterRelativePath = in.readString();
+        this.id = in.readInt();
+        this.releaseDate = in.readString();
+        this.voteCount = in.readInt();
+        this.voteAverage = in.readDouble();
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {

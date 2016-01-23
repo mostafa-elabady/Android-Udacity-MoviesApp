@@ -9,37 +9,11 @@
     tools:showIn="@layout/activity_detail"
     tools:context="com.mostafa.moviesapp.DetailActivityFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+   <ListView
+       android:id="@+id/movie_trailers_reviews_list"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/movie_detail_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:gravity="center" />
-
-            <ImageView
-                android:id="@+id/movie_detail_image"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="fitXY" />
-
-            <TextView
-                android:id="@+id/movie_detail_overview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-
-                />
-
-        </LinearLayout>
-    </ScrollView>
+   </ListView>
 
 </RelativeLayout>
