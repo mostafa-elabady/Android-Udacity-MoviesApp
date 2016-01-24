@@ -23,12 +23,13 @@ import java.util.ArrayList;
 public class ImagesGridAdapter extends BaseAdapter {
 
     private Context context;
+    private Movie[] movies;
 
     public void setMovies(Movie[] movies) {
         this.movies = movies;
     }
 
-    private Movie[] movies;
+
 
     public ImagesGridAdapter(Context context, Movie[] movies) {
         this.context = context;

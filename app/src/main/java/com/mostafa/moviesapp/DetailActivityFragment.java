@@ -1,5 +1,8 @@
 package com.mostafa.moviesapp;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +15,9 @@ import android.widget.TextView;
 import com.mostafa.moviesapp.adapters.TrailersReviewsAdapter;
 import com.mostafa.moviesapp.helpers.Utility;
 import com.mostafa.moviesapp.models.Movie;
+import com.mostafa.moviesapp.tasks.FetchTask;
+import com.mostafa.moviesapp.tasks.ParseMoviesTask;
+import com.mostafa.moviesapp.tasks.ParseTrailersReviewsTask;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -27,6 +33,7 @@ public class DetailActivityFragment extends Fragment {
     private TextView overviewTextView;
     private  TextView releaseDateTextView;
     private  TextView averageVoteTextView;
+    private  TrailersReviewsAdapter trailersReviewsAdapter;
 
     public DetailActivityFragment() {
     }
@@ -37,10 +44,11 @@ public class DetailActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         trailersReviewsListView = (ListView)rootView.findViewById(R.id.movie_trailers_reviews_list);
+        trailersReviewsAdapter = new TrailersReviewsAdapter(getContext());
 
         View header = View.inflate(getActivity(), R.layout.movieheader, null);
         trailersReviewsListView.addHeaderView(header);
-        trailersReviewsListView.setAdapter(new TrailersReviewsAdapter());
+        trailersReviewsListView.setAdapter(trailersReviewsAdapter);
 
         titleTextView = (TextView) header.findViewById(R.id.movie_detail_title);
         overviewTextView = (TextView) header.findViewById(R.id.movie_detail_overview);
@@ -62,8 +70,16 @@ public class DetailActivityFragment extends Fragment {
             releaseDateTextView.setText(fullReleaseDate);
 
             averageVoteTextView.setText(String.format("%s/10", movie.getVoteAverage()) );
+            if(Utility.isConnected(getContext())){
+                ParseTrailersReviewsTask parseMoviesTask = new ParseTrailersReviewsTask(getActivity(), trailersReviewsAdapter);
+                FetchTask fetchFromServerTask = new FetchTask(parseMoviesTask);
+                String FORECAST_URL = String.format(Utility.VIDEOS_API_URL, movie.getId() , BuildConfig.MOVIES_DB_API_KEY);
+                fetchFromServerTask.execute(FORECAST_URL);
+            }
         }
 
         return rootView;
     }
+
+
 }

@@ -46,6 +46,7 @@ public class ParseTrailersReviewsTask extends AsyncTask<Object, Void, TrailerRev
                 JSONObject trailerReviewJSON = moviesArray.getJSONObject(i);
                 trailersReviews[i] = new TrailerReview();
                 trailersReviews[i].setId(trailerReviewJSON.getString(ID_KEY));
+                trailersReviews[i].setKey(trailerReviewJSON.getString("key"));
             }
             return trailersReviews;
         } catch (Exception e) {

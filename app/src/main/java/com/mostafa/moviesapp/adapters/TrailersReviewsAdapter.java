@@ -1,10 +1,19 @@
 package com.mostafa.moviesapp.adapters;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.mostafa.moviesapp.R;
+import com.mostafa.moviesapp.helpers.Utility;
 import com.mostafa.moviesapp.models.TrailerReview;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by Mostafa El-Abady on 1/23/2016.
@@ -12,6 +21,13 @@ import com.mostafa.moviesapp.models.TrailerReview;
 public class TrailersReviewsAdapter extends BaseAdapter {
 
 
+    private Context context;
+    private ArrayList<TrailerReview>  trailerReviews;
+
+    public  TrailersReviewsAdapter(Context context){
+        this.context = context;
+        trailerReviews = new ArrayList<>();
+    }
     @Override
     public boolean isEmpty() {
         return false;
@@ -19,24 +35,45 @@ public class TrailersReviewsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return trailerReviews.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return trailerReviews.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_trailer_review, parent, false);
+        }
+        FrameLayout trailerLayout = (FrameLayout)convertView.findViewById(R.id.movie_trailer_item_layout);
+        ImageView trailerImageView =(ImageView)convertView.findViewById(R.id.movie_trailer_item_image);
+        TrailerReview currentTrailerReview = this.trailerReviews.get(position);
+        if(currentTrailerReview.getType() != null && currentTrailerReview.getType().equals("Trailer")){
+            // Trailer
+            String thumbnailImageFullPath = String.format(Utility.YOUTUBE_THUMBNAIL_URL_FORMAT, currentTrailerReview.getKey());
+            Picasso.with(context).load(thumbnailImageFullPath).into(trailerImageView);
+
+        }
+        else {
+            //Review
+
+        }
+        return  convertView;
     }
 
     public void addTrailersReviews(TrailerReview[] trailerreviews) {
+        for(TrailerReview t : trailerreviews){
+            this.trailerReviews.add(t);
+        }
+        notifyDataSetChanged();
     }
 }

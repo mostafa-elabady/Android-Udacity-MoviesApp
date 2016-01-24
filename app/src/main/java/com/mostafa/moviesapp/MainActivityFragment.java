@@ -56,7 +56,7 @@ public class MainActivityFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            if (isConnected(getActivity())) {
+            if ( Utility.isConnected(getActivity())) {
                 parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter);
                 fetchFromServerTask = new FetchTask(parseMoviesTask);
                 String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
@@ -99,7 +99,7 @@ public class MainActivityFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        if (isConnected(getActivity())) {
+        if ( Utility.isConnected(getActivity())) {
             parseMoviesTask = new ParseMoviesTask(getActivity(),  moviesAdapter);
             fetchFromServerTask = new FetchTask(parseMoviesTask);
             String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY ,  Utility.PAGE_DEFAULT_VALUE);
@@ -110,13 +110,7 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    public static boolean isConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
 
 
 
