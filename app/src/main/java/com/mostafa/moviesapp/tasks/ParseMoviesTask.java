@@ -3,6 +3,8 @@ package com.mostafa.moviesapp.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.mostafa.moviesapp.adapters.ImagesGridAdapter;
 import com.mostafa.moviesapp.models.Movie;
@@ -18,10 +20,12 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
     private ImagesGridAdapter moviesAdapter;
     private  Context context;
     private final String LOG_TAG = FetchTask.class.getSimpleName();
+    private ProgressBar progressBar;
 
-    public ParseMoviesTask(Context context, ImagesGridAdapter moviesAdapter) {
+    public ParseMoviesTask(Context context, ImagesGridAdapter moviesAdapter, ProgressBar progressBar) {
         this.context = context;
         this.moviesAdapter = moviesAdapter;
+        this.progressBar = progressBar;
     }
 
     @Override
@@ -78,7 +82,7 @@ public class ParseMoviesTask extends AsyncTask<Object, Void, Movie[]> {
         if (movies != null) {
             moviesAdapter.setMovies(movies);
             moviesAdapter.notifyDataSetChanged();
-
+            progressBar.setVisibility(View.GONE);
         }
     }
 }

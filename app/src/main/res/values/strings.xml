@@ -4,4 +4,11 @@
     <string name="title_activity_detail">Details</string>
     <string name="action_refresh">Refresh</string>
     <string name="NOInternetConnection">No Internet connection, pleae connect to internet</string>
+    <string name="action_share">Share</string>
+
+    <string-array name="spinner_array_strings">
+        <item>Most popular</item>
+        <item>Highest rated</item>
+        <item>Favorites</item>
+    </string-array>
 </resources>

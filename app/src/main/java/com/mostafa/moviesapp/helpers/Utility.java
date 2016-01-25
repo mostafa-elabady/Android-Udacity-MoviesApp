@@ -16,9 +16,10 @@ public class Utility {
     public static int PAGE_DEFAULT_VALUE = 1;
     public static String MOVIES_API_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=%s&page=%d";
     public static String REVIEWS_API_URL = "http://api.themoviedb.org/3/movie/%s/reviews?&api_key=%s";
-    public static String VIDEOS_API_URL = "http://api.themoviedb.org/3/movie/%s/reviews?&api_key=%s";
+    public static String VIDEOS_API_URL = "http://api.themoviedb.org/3/movie/%s/videos?&api_key=%s";
+    public static boolean isTwoPane;
 
-
+    public  enum  TrailersReviewsType{Trailer, Review}
     public static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

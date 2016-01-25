@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class MainActivityFragment extends Fragment {
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private FetchTask fetchFromServerTask;
     private ParseMoviesTask parseMoviesTask;
+    private ProgressBar progressBar;
 
     public MainActivityFragment() {
     }
@@ -51,13 +53,10 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            if ( Utility.isConnected(getActivity())) {
-                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter);
+            if (Utility.isConnected(getActivity())) {
+                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
                 fetchFromServerTask = new FetchTask(parseMoviesTask);
                 String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
                 fetchFromServerTask.execute(FORECAST_URL);
@@ -75,7 +74,8 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        sorttypeSpinner  = (Spinner) rootView.findViewById(R.id.spurcetypespinner);
+        if (moviesAdapter == null) {
+            sorttypeSpinner = (Spinner) rootView.findViewById(R.id.spurcetypespinner);
 //        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(),
 //                R.array.sorttype_array, R.layout.item_spinner);
 //        sorttypeSpinner.setAdapter(mSpinnerAdapter);
@@ -85,34 +85,29 @@ public class MainActivityFragment extends Fragment {
 //        sorttypeSpinner.setOnItemSelectedListener(listener);
 
 
-        moviesGridView = (GridView) rootView.findViewById(R.id.maingridView);
-        moviesAdapter = new ImagesGridAdapter(getContext(), new Movie[]{});
-        moviesGridView.setAdapter(moviesAdapter);
-        moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Movie item = (Movie) parent.getItemAtPosition(position);
-                //Create intent
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra("movie", item);
-                //Start details activity
-                startActivity(intent);
+            progressBar = (ProgressBar) rootView.findViewById(R.id.progressbar);
+            moviesGridView = (GridView) rootView.findViewById(R.id.maingridView);
+            moviesAdapter = new ImagesGridAdapter(getContext(), new Movie[]{});
+            moviesGridView.setAdapter(moviesAdapter);
+            moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Movie item = (Movie) parent.getItemAtPosition(position);
+                    ((ActivityCallBack) getActivity()).OnItemSelected(item);
+                }
+            });
+            if (Utility.isConnected(getActivity())) {
+                progressBar.setVisibility(View.VISIBLE);
+                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
+                fetchFromServerTask = new FetchTask(parseMoviesTask);
+                String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
+                fetchFromServerTask.execute(FORECAST_URL);
+            } else {
+                Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
             }
-        });
-        if ( Utility.isConnected(getActivity())) {
-            parseMoviesTask = new ParseMoviesTask(getActivity(),  moviesAdapter);
-            fetchFromServerTask = new FetchTask(parseMoviesTask);
-            String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY ,  Utility.PAGE_DEFAULT_VALUE);
-            fetchFromServerTask.execute(FORECAST_URL);
-        } else {
-            Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
         }
         return rootView;
     }
-
-
-
-
 
 
 }

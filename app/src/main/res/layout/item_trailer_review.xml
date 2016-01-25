@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="8dp"
+    android:layout_marginTop="12dp"
     android:paddingBottom="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
     >
 
     <FrameLayout
         android:id="@+id/movie_trailer_item_layout"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="180dp"
         android:orientation="vertical">
 
         <ImageView
@@ -28,10 +31,30 @@
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/movie_review_textView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/movie_review_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
 
-         />
-</LinearLayout>
+            />
+
+        <TextView
+            android:id="@+id/movie_review_author_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="6dp"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginBottom="8dp"
+
+/>
+    </LinearLayout>
+
+</FrameLayout>
