@@ -15,6 +15,7 @@ public class Utility {
     public static String YOUTUBE_THUMBNAIL_URL_FORMAT = "http://img.youtube.com/vi/%s/0.jpg";
     public static int PAGE_DEFAULT_VALUE = 1;
     public static String MOVIES_API_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=%s&page=%d";
+    public static String MOVIES_HIGHEST_RATED_API_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=%s&page=%d";
     public static String REVIEWS_API_URL = "http://api.themoviedb.org/3/movie/%s/reviews?&api_key=%s";
     public static String VIDEOS_API_URL = "http://api.themoviedb.org/3/movie/%s/videos?&api_key=%s";
     public static boolean isTwoPane;

@@ -29,6 +29,10 @@ import com.mostafa.moviesapp.tasks.ParseMoviesTask;
  */
 public class MainActivityFragment extends Fragment {
 
+    public enum SourceTypeEnum {MostPopular, HighestRated, Favorites}
+
+    ;
+
     private GridView moviesGridView;
     private Spinner sorttypeSpinner;
     private ImagesGridAdapter moviesAdapter;
@@ -36,6 +40,7 @@ public class MainActivityFragment extends Fragment {
     private FetchTask fetchFromServerTask;
     private ParseMoviesTask parseMoviesTask;
     private ProgressBar progressBar;
+    private SourceTypeEnum currentDataSource = SourceTypeEnum.MostPopular;
 
     public MainActivityFragment() {
     }
@@ -56,10 +61,7 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             if (Utility.isConnected(getActivity())) {
-                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
-                fetchFromServerTask = new FetchTask(parseMoviesTask);
-                String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
-                fetchFromServerTask.execute(FORECAST_URL);
+                refreshData();
             } else {
                 Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
             }
@@ -76,13 +78,26 @@ public class MainActivityFragment extends Fragment {
 
         if (moviesAdapter == null) {
             sorttypeSpinner = (Spinner) rootView.findViewById(R.id.spurcetypespinner);
-//        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(),
-//                R.array.sorttype_array, R.layout.item_spinner);
-//        sorttypeSpinner.setAdapter(mSpinnerAdapter);
+            sorttypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0) {
+                        currentDataSource = SourceTypeEnum.MostPopular;
+                        refreshData();
+                    } else if (position == 1) {
+                        currentDataSource = SourceTypeEnum.HighestRated;
+                        refreshData();
+                    } else if (position == 2) {
+                        currentDataSource = SourceTypeEnum.Favorites;
+                        refreshData();
+                    }
+                }
 
-//        CustomSpinnerInteractionListener listener = new CustomSpinnerInteractionListener();
-//        sorttypeSpinner.setOnTouchListener(listener);
-//        sorttypeSpinner.setOnItemSelectedListener(listener);
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
 
             progressBar = (ProgressBar) rootView.findViewById(R.id.progressbar);
@@ -97,11 +112,7 @@ public class MainActivityFragment extends Fragment {
                 }
             });
             if (Utility.isConnected(getActivity())) {
-                progressBar.setVisibility(View.VISIBLE);
-                parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
-                fetchFromServerTask = new FetchTask(parseMoviesTask);
-                String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
-                fetchFromServerTask.execute(FORECAST_URL);
+
             } else {
                 Toast.makeText(getActivity(), R.string.NOInternetConnection, Toast.LENGTH_LONG).show();
             }
@@ -110,4 +121,25 @@ public class MainActivityFragment extends Fragment {
     }
 
 
+    private void refreshData() {
+        if (currentDataSource == SourceTypeEnum.MostPopular) {
+            progressBar.setVisibility(View.VISIBLE);
+            parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
+            fetchFromServerTask = new FetchTask(parseMoviesTask);
+            String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
+            fetchFromServerTask.execute(FORECAST_URL);
+        } else if (currentDataSource == SourceTypeEnum.HighestRated) {
+            progressBar.setVisibility(View.VISIBLE);
+            parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
+            fetchFromServerTask = new FetchTask(parseMoviesTask);
+            String FORECAST_URL = String.format(Utility.MOVIES_HIGHEST_RATED_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
+            fetchFromServerTask.execute(FORECAST_URL);
+        } else if (currentDataSource == SourceTypeEnum.Favorites) {
+            progressBar.setVisibility(View.VISIBLE);
+            parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
+            fetchFromServerTask = new FetchTask(parseMoviesTask);
+            String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
+            fetchFromServerTask.execute(FORECAST_URL);
+        }
+    }
 }

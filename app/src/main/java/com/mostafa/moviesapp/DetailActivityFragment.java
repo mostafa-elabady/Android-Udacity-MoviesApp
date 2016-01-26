@@ -64,8 +64,18 @@ public class DetailActivityFragment extends Fragment {
         releaseDateTextView = (TextView) header.findViewById(R.id.movie_detail_releasedate);
         averageVoteTextView = (TextView) header.findViewById(R.id.movie_detail_avergatevote);
 
+
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         // Fetching data from a parcelable object passed from MainActivity
-        Movie movie = getActivity().getIntent().getParcelableExtra("movie");
+        Bundle bundle = getArguments();
+        Movie movie = bundle.getParcelable("movie");
         if (movie != null) {
             currentMovie = movie;
             titleTextView.setText(movie.getTitle());
@@ -111,12 +121,10 @@ public class DetailActivityFragment extends Fragment {
 
             });
         }
-
-        return rootView;
     }
 
 
-//    @Override
+    //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        inflater.inflate(R.menu.menu_detail, menu);
 //    }

@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +24,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCallBack 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (findViewById(R.id.detail_fragment) != null) {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics ();
+        display.getMetrics(outMetrics);
+
+        float density  = getResources().getDisplayMetrics().density;
+        float dpHeight = outMetrics.heightPixels / density;
+        float dpWidth  = outMetrics.widthPixels / density;
+
+        if (findViewById(R.id.detail_frameLayout) != null) {
             Utility.isTwoPane = true;
+        }
+        else {
+            Utility.isTwoPane = false;
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -37,10 +50,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCallBack 
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             Bundle bundle = new Bundle();
             if (movie != null) {
-                bundle.putParcelable("data", movie);
+                bundle.putParcelable("movie", movie);
                 DetailActivityFragment fragment = new DetailActivityFragment();
                 fragment.setArguments(bundle);
-                fragmentTransaction.replace(R.id.detail_fragment, fragment);
+                fragmentTransaction.replace(R.id.detail_frameLayout, fragment);
                 fragmentTransaction.commit();
             }
 
