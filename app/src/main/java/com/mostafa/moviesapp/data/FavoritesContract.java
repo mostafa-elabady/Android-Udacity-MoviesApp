@@ -26,9 +26,6 @@ public class FavoritesContract {
 
     public static final class FavoriteEntry implements BaseColumns {
 
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
-
         // Table name
         public static final String TABLE_NAME = "favorite";
 
@@ -36,50 +33,56 @@ public class FavoritesContract {
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_RELEASE_DATA = "release_date";
         public static final String COLUMN_POSTER_PATH = "poster_path";
-        public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
         public static final String COLUMN_OVERVIEW = "overview";
         public static final String COLUMN_vote_average = "vote_average";
 
-        public static Uri buildLocationUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
+
     }
 
+    public static final class TrailerReviewEntry implements BaseColumns {
+
+
+        // Table name
+        public static final String TABLE_NAME = "trailerreview";
+
+        // to use for foreign key
+        public static final String COLUMN_MOVIE_ID = "movie_id";
+
+        public static final String COLUMN_REVIEW_CONTENT = "review_text";
+        public static final String COLUMN_REVIEW_AUTHOR = "review_author";
+        public static final String COLUMN_TRAILER_KEY = "trailer_key";
+        public static final String COLUMN_TRAILER_SITE = "trailer_site";
+        public static final String COLUMN_TYPE = "trailerreview_type";
+
+    }
 
     public static final class ReviewEntry implements BaseColumns {
 
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEWS).build();
 
         // Table name
         public static final String TABLE_NAME = "review";
 
         // to use for foreign key
-        public static final String COLUMN_FAVORITE_ID = "favorite_id";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
 
-        public static final String COLUMN_TITLE = "review_text";
+        public static final String COLUMN_CONTENT = "review_text";
+        public static final String COLUMN_AUTHOR = "review_author";
 
-        public static Uri buildLocationUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
     }
 
     public static final class TrailerEntry implements BaseColumns {
 
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TRAILERS).build();
 
         // Table name
         public static final String TABLE_NAME = "trailer";
 
         // to use for foreign key
-        public static final String COLUMN_FAVORITE_ID = "favorite_id";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
 
-        public static final String COLUMN_TRAILER_URL = "trailer_url";
+        public static final String COLUMN_TRAILER_KEY = "trailer_key";
+        public static final String COLUMN_TRAILER_SITE = "trailer_site";
 
-        public static Uri buildLocationUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
+
     }
 
 

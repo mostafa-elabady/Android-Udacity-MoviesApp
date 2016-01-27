@@ -15,6 +15,7 @@ import com.mostafa.moviesapp.models.TrailerReview;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -89,5 +90,9 @@ public class TrailersReviewsAdapter extends BaseAdapter {
             this.trailerReviews.add(t);
         }
         notifyDataSetChanged();
+    }
+
+    public ArrayList<TrailerReview> getItems(){
+        return trailerReviews;
     }
 }
