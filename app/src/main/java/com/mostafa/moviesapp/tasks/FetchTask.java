@@ -93,7 +93,7 @@ public class FetchTask extends AsyncTask<String, Void, String> {
                 Log.d(LOG_TAG, "json :" + jsonString);
                 parseAsyncTask.execute(jsonString);
             } catch (Exception ex) {
-                Log.e(LOG_TAG, "Error ", ex);
+                Log.e(LOG_TAG, "Error " + ex.getMessage() + " : " + ex.getStackTrace());
             }
 
         }

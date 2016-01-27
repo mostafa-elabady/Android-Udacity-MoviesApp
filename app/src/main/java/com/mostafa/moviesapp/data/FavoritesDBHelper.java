@@ -3,6 +3,7 @@ package com.mostafa.moviesapp.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.mostafa.moviesapp.data.FavoritesContract.ReviewEntry;
 import com.mostafa.moviesapp.data.FavoritesContract.FavoriteEntry;
 import com.mostafa.moviesapp.data.FavoritesContract.TrailerEntry;
@@ -12,13 +13,21 @@ import com.mostafa.moviesapp.data.FavoritesContract.TrailerEntry;
  */
 public class FavoritesDBHelper extends SQLiteOpenHelper {
 
+    private static FavoritesDBHelper instance;
 
-        private static final int DATABASE_VERSION = 1;
+    public static FavoritesDBHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new FavoritesDBHelper(context);
+        }
+        return instance;
+    }
 
-        static final String DATABASE_NAME = "favorites.db";
+    private static final int DATABASE_VERSION = 1;
 
-        public FavoritesDBHelper(Context context){
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    static final String DATABASE_NAME = "favorites.db";
+
+    public FavoritesDBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -76,15 +85,15 @@ public class FavoritesDBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TRAILER_REVIEW_TABLE);
-       // sqLiteDatabase.execSQL(SQL_CREATE_REVIEW_TABLE);
-       // sqLiteDatabase.execSQL(SQL_CREATE_TRAILER_TABLE);
+        // sqLiteDatabase.execSQL(SQL_CREATE_REVIEW_TABLE);
+        // sqLiteDatabase.execSQL(SQL_CREATE_TRAILER_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesContract.FavoriteEntry.TABLE_NAME);
-      //  sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesContract.TrailerEntry.TABLE_NAME);
-      // sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesContract.ReviewEntry.TABLE_NAME);
+        //  sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesContract.TrailerEntry.TABLE_NAME);
+        // sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesContract.ReviewEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

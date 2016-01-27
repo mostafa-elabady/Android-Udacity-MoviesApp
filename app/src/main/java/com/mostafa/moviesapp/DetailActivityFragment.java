@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,7 +45,9 @@ public class DetailActivityFragment extends Fragment {
     private TrailersReviewsAdapter trailersReviewsAdapter;
     private final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private Movie currentMovie;
-    private FavoritesDBHelper dbHelper;
+    private FloatingActionButton favoritesFloatingActionButton;
+
+    private boolean isMovieFavorite = false;
 
     public DetailActivityFragment() {
 
@@ -55,6 +58,19 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
+        favoritesFloatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.favorites_fab);
+        favoritesFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isMovieFavorite) {
+                    deleteMovieFromDB();
+                } else {
+                    insertMovieToDB(currentMovie);
+                }
+                checkIfMovieAlreadyFavorited(currentMovie.getId());
+                updateFloatingActionButtonSource();
+            }
+        });
         trailersReviewsListView = (ListView) rootView.findViewById(R.id.movie_trailers_reviews_list);
         trailersReviewsAdapter = new TrailersReviewsAdapter(getContext());
 
@@ -72,6 +88,7 @@ public class DetailActivityFragment extends Fragment {
         return rootView;
     }
 
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -81,6 +98,8 @@ public class DetailActivityFragment extends Fragment {
         Movie movie = bundle.getParcelable("movie");
         if (movie != null) {
             currentMovie = movie;
+            checkIfMovieAlreadyFavorited(movie.getId());
+            updateFloatingActionButtonSource();
             titleTextView.setText(movie.getTitle());
             overviewTextView.setText(movie.getOverview());
             String movieImageFullPath = String.format(Utility.IMAGE_URL_FORMAT, Utility.IMAGE_SIZE, movie.getPosterRelativePath());
@@ -103,7 +122,7 @@ public class DetailActivityFragment extends Fragment {
                 String reviewsurl = String.format(Utility.REVIEWS_API_URL, movie.getId(), BuildConfig.MOVIES_DB_API_KEY);
                 fetchReviewsTask.execute(reviewsurl);
             }
-            insertMovieToDB(movie);
+            // insertMovieToDB(movie);
             trailersReviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -126,9 +145,7 @@ public class DetailActivityFragment extends Fragment {
 
 
     private boolean insertMovieToDB(Movie currentMovie) {
-        if (dbHelper == null) {
-            dbHelper = new FavoritesDBHelper(getActivity());
-        }
+        FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
         SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
         try {
             //Insert Movie
@@ -145,51 +162,84 @@ public class DetailActivityFragment extends Fragment {
                 return false;
 
             //Insert Trailers and Reviews
-            if(trailersReviewsAdapter != null){
-                ArrayList<TrailerReview> items =trailersReviewsAdapter.getItems();
-                if(items != null && items.size() > 0){
-                    for(TrailerReview tv: items){
+            if (trailersReviewsAdapter != null) {
+                ArrayList<TrailerReview> items = trailersReviewsAdapter.getItems();
+                if (items != null && items.size() > 0) {
+                    for (TrailerReview tv : items) {
                         ContentValues trailerreviewsValues = new ContentValues();
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_MOVIE_ID, currentMovie.getId());
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TYPE, tv.getType());
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TRAILER_KEY, tv.getKey());
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TRAILER_SITE, tv.getSite());
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_REVIEW_CONTENT, tv.getContent());
-                        movieValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_REVIEW_AUTHOR, tv.getAuthor());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_MOVIE_ID, currentMovie.getId());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TYPE, tv.getType());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TRAILER_KEY, tv.getKey());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_TRAILER_SITE, tv.getSite());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_REVIEW_CONTENT, tv.getContent());
+                        trailerreviewsValues.put(FavoritesContract.TrailerReviewEntry.COLUMN_REVIEW_AUTHOR, tv.getAuthor());
 
                         writableDatabase.beginTransaction();
+                        long id2 = writableDatabase.insert(FavoritesContract.TrailerReviewEntry.TABLE_NAME, null, trailerreviewsValues);
+                        if (id2 != -1) {
+
+                        }
                     }
                 }
             }
 
         } catch (Exception ex) {
-            return false;
-        }finally {
             writableDatabase.endTransaction();
+            return false;
+        } finally {
+            writableDatabase.endTransaction();
+
         }
         return true;
     }
 
-    private boolean checkIfMovieAlreadyFavorited(int movieId) {
-        if (dbHelper == null) {
-            dbHelper = new FavoritesDBHelper(getActivity());
+    private void deleteMovieFromDB() {
+        try {
+            FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
+            SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
+
+            writableDatabase.delete(FavoritesContract.FavoriteEntry.TABLE_NAME, FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID + "=" + currentMovie.getId(), null);
+            writableDatabase.delete(FavoritesContract.TrailerReviewEntry.TABLE_NAME, FavoritesContract.TrailerReviewEntry.COLUMN_MOVIE_ID + "=" + currentMovie.getId(), null);
+        } catch (Exception ex) {
+
+        } finally {
+
         }
+    }
+
+    private boolean checkIfMovieAlreadyFavorited(int movieId) {
+        FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
         try {
             Cursor cursor = null;
-            String sql = "SELECT * FROM " + FavoritesContract.FavoriteEntry.TABLE_NAME + " WHERE " + FavoritesContract.FavoriteEntry._ID + "=" + movieId;
+            String sql = "SELECT * FROM " + FavoritesContract.FavoriteEntry.TABLE_NAME + " WHERE " + FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID + "=" + movieId;
             cursor = dbHelper.getReadableDatabase().rawQuery(sql, null);
 
             if (cursor.getCount() > 0) {
+                isMovieFavorite = true;
                 // Found
                 return true;
             } else {
+                isMovieFavorite = false;
                 // Not Found
                 return false;
             }
         } catch (Exception ex) {
             return false;
+        } finally {
+           
         }
     }
+
+    private void updateFloatingActionButtonSource() {
+        if (favoritesFloatingActionButton != null) {
+            if (isMovieFavorite) {
+                favoritesFloatingActionButton.setImageResource(R.mipmap.ic_star_white);
+            } else {
+                favoritesFloatingActionButton.setImageResource(R.mipmap.ic_star_yellow);
+            }
+        }
+    }
+
     //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        inflater.inflate(R.menu.menu_detail, menu);

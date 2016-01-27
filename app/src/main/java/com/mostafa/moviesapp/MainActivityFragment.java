@@ -2,10 +2,13 @@ package com.mostafa.moviesapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +22,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mostafa.moviesapp.adapters.ImagesGridAdapter;
+import com.mostafa.moviesapp.data.FavoritesContract;
+import com.mostafa.moviesapp.data.FavoritesDBHelper;
 import com.mostafa.moviesapp.helpers.Utility;
 import com.mostafa.moviesapp.models.Movie;
 import com.mostafa.moviesapp.tasks.FetchTask;
 import com.mostafa.moviesapp.tasks.ParseMoviesTask;
+
+import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -122,6 +129,14 @@ public class MainActivityFragment extends Fragment {
 
 
     private void refreshData() {
+        moviesAdapter.setMovies(new Movie[0]);
+        moviesAdapter.notifyDataSetChanged();
+        if (parseMoviesTask != null) {
+            parseMoviesTask.cancel(true);
+        }
+        if (fetchFromServerTask != null) {
+            fetchFromServerTask.cancel(true);
+        }
         if (currentDataSource == SourceTypeEnum.MostPopular) {
             progressBar.setVisibility(View.VISIBLE);
             parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
@@ -135,11 +150,58 @@ public class MainActivityFragment extends Fragment {
             String FORECAST_URL = String.format(Utility.MOVIES_HIGHEST_RATED_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
             fetchFromServerTask.execute(FORECAST_URL);
         } else if (currentDataSource == SourceTypeEnum.Favorites) {
-            progressBar.setVisibility(View.VISIBLE);
-            parseMoviesTask = new ParseMoviesTask(getActivity(), moviesAdapter, progressBar);
-            fetchFromServerTask = new FetchTask(parseMoviesTask);
-            String FORECAST_URL = String.format(Utility.MOVIES_API_URL, BuildConfig.MOVIES_DB_API_KEY, Utility.PAGE_DEFAULT_VALUE);
-            fetchFromServerTask.execute(FORECAST_URL);
+            getFavoritesDataFromDB();
+
         }
+    }
+
+    private void getFavoritesDataFromDB() {
+
+        FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
+
+        try {
+            progressBar.setVisibility(View.VISIBLE);
+
+            SQLiteDatabase readableDatabase = dbHelper.getReadableDatabase();
+            String[] moviesProjection = new String[]{
+                    FavoritesContract.FavoriteEntry.COLUMN_TITLE,
+                    FavoritesContract.FavoriteEntry.COLUMN_vote_average,
+                    FavoritesContract.FavoriteEntry.COLUMN_RELEASE_DATA,
+                    FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID,
+                    FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW,
+                    FavoritesContract.FavoriteEntry.COLUMN_POSTER_PATH,
+
+            };
+             Cursor cursor = readableDatabase.query(FavoritesContract.FavoriteEntry.TABLE_NAME, moviesProjection, null, null, null, null, null);
+//            Cursor cursor = null;
+//            String sql = "SELECT * FROM " + FavoritesContract.FavoriteEntry.TABLE_NAME + ";";
+//            cursor = readableDatabase.rawQuery(sql, null);
+
+            if (cursor.moveToFirst()) {
+                Log.d(LOG_TAG, "Found movies " + cursor.getCount());
+                ArrayList<Movie> movies = new ArrayList<Movie>();
+                while (cursor.isAfterLast() == false) {
+                    Movie m = new Movie();
+                    m.setTitle(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_TITLE)));
+                    m.setVoteAverage(cursor.getDouble(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_vote_average)));
+                    m.setReleaseDate(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_RELEASE_DATA)));
+                    m.setId(cursor.getInt(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID)));
+                    m.setOverview(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW)));
+                    m.setPosterRelativePath(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoriteEntry.COLUMN_POSTER_PATH)));
+
+
+                    movies.add(m);
+                    cursor.moveToNext();
+                }
+                moviesAdapter.setMovies((Movie[]) movies.toArray());
+                moviesAdapter.notifyDataSetChanged();
+            }
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, "Exception "+ ex.getMessage() + " "+ ex.getStackTrace());
+        } finally {
+            progressBar.setVisibility(View.GONE);
+            dbHelper.close();
+        }
+
     }
 }

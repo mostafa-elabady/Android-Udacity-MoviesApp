@@ -70,7 +70,7 @@ public class TrailersReviewsAdapter extends BaseAdapter {
         else {
             //Review
 
-            trailerLayout.setVisibility(View.GONE);
+            trailerLayout.setVisibility(View.INVISIBLE);
             TextView contentTextView = (TextView)convertView.findViewById(R.id.movie_review_textView);
             TextView authorTextView = (TextView)convertView.findViewById(R.id.movie_review_author_textView);
 
