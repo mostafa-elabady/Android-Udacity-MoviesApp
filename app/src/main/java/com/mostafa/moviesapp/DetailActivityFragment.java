@@ -188,22 +188,25 @@ public class DetailActivityFragment extends Fragment {
             return false;
         } finally {
             writableDatabase.endTransaction();
+            writableDatabase.close();
+
 
         }
         return true;
     }
 
     private void deleteMovieFromDB() {
+        FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
+        SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
+
         try {
-            FavoritesDBHelper dbHelper = FavoritesDBHelper.getInstance(getActivity());
-            SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
 
             writableDatabase.delete(FavoritesContract.FavoriteEntry.TABLE_NAME, FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID + "=" + currentMovie.getId(), null);
             writableDatabase.delete(FavoritesContract.TrailerReviewEntry.TABLE_NAME, FavoritesContract.TrailerReviewEntry.COLUMN_MOVIE_ID + "=" + currentMovie.getId(), null);
         } catch (Exception ex) {
 
         } finally {
-
+            writableDatabase.close();
         }
     }
 
@@ -226,7 +229,7 @@ public class DetailActivityFragment extends Fragment {
         } catch (Exception ex) {
             return false;
         } finally {
-           
+
         }
     }
 

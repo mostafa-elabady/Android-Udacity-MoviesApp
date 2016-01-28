@@ -193,7 +193,11 @@ public class MainActivityFragment extends Fragment {
                     movies.add(m);
                     cursor.moveToNext();
                 }
-                moviesAdapter.setMovies((Movie[]) movies.toArray());
+
+                Movie[] stockArr = new Movie[movies.size()];
+                stockArr = movies.toArray(stockArr);
+
+                moviesAdapter.setMovies(stockArr);
                 moviesAdapter.notifyDataSetChanged();
             }
         } catch (Exception ex) {
